@@ -1,4 +1,4 @@
 @echo off
-cd server
-node server.js
+cd SkiServiceManagement
+dotnet run
 pause
