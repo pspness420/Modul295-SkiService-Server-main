@@ -7,18 +7,16 @@ using SkiServiceManagement.Data; // Namespace des DbContext
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Datenbankverbindung konfigurieren
+// Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Weitere Services hinzufügen
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Middleware konfigurieren
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -28,4 +26,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
+
