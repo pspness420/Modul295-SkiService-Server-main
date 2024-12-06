@@ -27,7 +27,6 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
-            <!-- Links zu den verschiedenen Seiten -->
             <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="services.html">Angebot</a></li>
             <li class="nav-item"><a class="nav-link" href="contact.html">Kontakt</a></li>
@@ -38,10 +37,8 @@
 
 <!-- Hauptinhalt -->
 <fieldset class="background">
-    <!-- Online-Anmeldeformular -->
     <section id="registration" class="container my-5">
         <h2>Anmeldung für Service</h2>
-        <!-- Formular für die Anmeldung -->
         <form id="registrationForm">
             <!-- Vorname -->
             <div class="form-group">
@@ -106,15 +103,9 @@
                     <label class="form-check-label" for="waxService">Heißwachsen</label>
                 </div>
             </div>
-            <!-- Steuerung: Absenden, Ansehen und Löschen -->
+            <!-- Steuerung: Absenden -->
             <div class="d-flex justify-content-between mt-4">
                 <button type="submit" class="btn btn-primary">Anmelden</button>
-                <!-- Externer Link, um Anmeldungen anzusehen -->
-                <a href="http://localhost:5000/api/registrations" target="_blank">
-                    <button type="button" class="btn btn-warning">Anmeldungen Ansehen</button>
-                </a>
-                <!-- Button zum Entfernen von Anmeldungen -->
-                <button type="button" id="resetButton" class="btn btn-danger">Anmeldung Entfernen</button>
             </div>
         </form>
     </section>
@@ -130,6 +121,34 @@
         </ul>
     </div>
 </footer>
+
+<script>
+    // Function to get query parameters from the URL
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // Prefill the "Vorname", "Nachname", and "E-Mail" fields if the parameters are passed
+    const firstName = getQueryParam("firstName");
+    const lastName = getQueryParam("lastName");
+    const email = getQueryParam("email");
+
+    if (firstName) {
+        document.getElementById("firstName").value = firstName;
+    }
+
+    if (lastName) {
+        document.getElementById("lastName").value = lastName;
+    }
+
+    if (email) {
+        const emailInput = document.getElementById("email");
+        if (emailInput) {
+            emailInput.value = email;
+        }
+    }
+</script>
 
 <!-- JavaScript-Bibliotheken -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
