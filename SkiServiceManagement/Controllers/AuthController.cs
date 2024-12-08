@@ -10,7 +10,6 @@ using SkiServiceManagement.Models;
 using SkiServiceManagement.Data;
 using System;
 
-
 namespace SkiServiceManagement.Controllers
 {
     [ApiController]
@@ -29,23 +28,14 @@ namespace SkiServiceManagement.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(Benutzer benutzer)
         {
-            try
-            {
-                if (await _context.Benutzer.AnyAsync(u => u.Benutzername == benutzer.Benutzername))
-                    return BadRequest("Benutzername existiert bereits.");
+            if (await _context.Benutzer.AnyAsync(u => u.Benutzername == benutzer.Benutzername))
+                return BadRequest("Benutzername existiert bereits.");
 
-                benutzer.Passwort = BCrypt.Net.BCrypt.HashPassword(benutzer.Passwort); // Passwort verschlüsseln
-                _context.Benutzer.Add(benutzer);
-                await _context.SaveChangesAsync();
-                return Ok("Benutzer erfolgreich registriert.");
-            }
-            catch (Exception ex)
-            {
-                // Schreibe die Ausnahme in die Logs
-                return StatusCode(500, $"Interner Serverfehler: {ex.Message}");
-            }
+            benutzer.Passwort = BCrypt.Net.BCrypt.HashPassword(benutzer.Passwort); // Passwort verschlüsseln
+            _context.Benutzer.Add(benutzer);
+            await _context.SaveChangesAsync();
+            return Ok("Benutzer erfolgreich registriert.");
         }
-
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
@@ -95,7 +85,6 @@ namespace SkiServiceManagement.Controllers
 
         private string GenerateJwtToken(Benutzer benutzer)
         {
-            var jwtSettings = _configuration.GetSection("Jwt");
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, benutzer.Benutzername),
@@ -103,14 +92,14 @@ namespace SkiServiceManagement.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
