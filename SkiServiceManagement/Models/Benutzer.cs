@@ -8,9 +8,15 @@ namespace SkiServiceManagement.Models
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(50)]
         public string Benutzername { get; set; }
 
         [Required]
+        [MaxLength(100)]
         public string Passwort { get; set; }
+
+        [Required]
+        [MaxLength(20)]
+        public string Rolle { get; set; } = "Kunde"; // Standardrolle ist Kunde
     }
 }
