@@ -3,11 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 using SkiServiceManagement.Models;
 using SkiServiceManagement.Data;
 using System;
+
 
 namespace SkiServiceManagement.Controllers
 {
@@ -16,23 +18,34 @@ namespace SkiServiceManagement.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(ApplicationDbContext context)
+        public AuthController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(Benutzer benutzer)
         {
-            if (await _context.Benutzer.AnyAsync(u => u.Benutzername == benutzer.Benutzername))
-                return BadRequest("Benutzername existiert bereits.");
+            try
+            {
+                if (await _context.Benutzer.AnyAsync(u => u.Benutzername == benutzer.Benutzername))
+                    return BadRequest("Benutzername existiert bereits.");
 
-            benutzer.Passwort = BCrypt.Net.BCrypt.HashPassword(benutzer.Passwort); // Passwort verschlüsseln
-            _context.Benutzer.Add(benutzer);
-            await _context.SaveChangesAsync();
-            return Ok("Benutzer erfolgreich registriert.");
+                benutzer.Passwort = BCrypt.Net.BCrypt.HashPassword(benutzer.Passwort); // Passwort verschlüsseln
+                _context.Benutzer.Add(benutzer);
+                await _context.SaveChangesAsync();
+                return Ok("Benutzer erfolgreich registriert.");
+            }
+            catch (Exception ex)
+            {
+                // Schreibe die Ausnahme in die Logs
+                return StatusCode(500, $"Interner Serverfehler: {ex.Message}");
+            }
         }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
@@ -82,6 +95,7 @@ namespace SkiServiceManagement.Controllers
 
         private string GenerateJwtToken(Benutzer benutzer)
         {
+            var jwtSettings = _configuration.GetSection("Jwt");
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, benutzer.Benutzername),
@@ -89,12 +103,12 @@ namespace SkiServiceManagement.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yourSecretKey")); // Passen Sie den Schlüssel an
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "yourIssuer",
-                audience: "yourAudience",
+                issuer: jwtSettings["Issuer"],
+                audience: jwtSettings["Audience"],
                 claims: claims,
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds);

@@ -3262,6 +3262,7 @@
       "Microsoft.Data.SqlClient >= 5.1.1",
       "Microsoft.EntityFrameworkCore.SqlServer >= 6.0.0",
       "Microsoft.EntityFrameworkCore.Tools >= 6.0.0",
+      "Microsoft.Extensions.Configuration.Abstractions >= 6.0.0",
       "Microsoft.IdentityModel.JsonWebTokens >= 7.0.0",
       "Microsoft.IdentityModel.Tokens >= 7.0.0",
       "Newtonsoft.Json >= 13.0.3",
@@ -3344,6 +3345,10 @@
           "Microsoft.EntityFrameworkCore.Tools": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",
+            "target": "Package",
+            "version": "[6.0.0, )"
+          },
+          "Microsoft.Extensions.Configuration.Abstractions": {
             "target": "Package",
             "version": "[6.0.0, )"
           },
