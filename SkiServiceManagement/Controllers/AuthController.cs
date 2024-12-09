@@ -45,7 +45,7 @@ namespace SkiServiceManagement.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(Benutzer benutzer)
         {
-            // Zusammensetzen des Benutzernamens aus Vorname und Nachname
+            // Benutzername aus Vorname und Nachname zusammensetzen
             if (string.IsNullOrWhiteSpace(benutzer.Benutzername))
             {
                 if (!string.IsNullOrWhiteSpace(benutzer.Vorname) && !string.IsNullOrWhiteSpace(benutzer.Nachname))
@@ -78,6 +78,7 @@ namespace SkiServiceManagement.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest loginRequest)
         {
+            // Benutzer suchen anhand von Benutzername oder E-Mail
             var benutzer = await _context.Benutzer
                 .SingleOrDefaultAsync(u =>
                     u.Benutzername == loginRequest.Benutzername || u.Email == loginRequest.Benutzername);
