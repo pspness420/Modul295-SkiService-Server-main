@@ -37,31 +37,42 @@ namespace SkiServiceManagement.Controllers
                 u.Id,
                 u.Benutzername,
                 u.Email,
-                u.Vorname,
-                u.Nachname,
                 u.Rolle
             }).ToList();
             return Ok(users);
         }
 
-        // Benutzer registrieren
         [HttpPost("register")]
-        public async Task<IActionResult> Register(Benutzer benutzer, string firstName, string lastName)
+        public async Task<IActionResult> Register(Benutzer benutzer)
         {
-            // Benutzername aus Vorname und Nachname zusammensetzen
-            benutzer.Benutzername = $"{firstName.Trim()} {lastName.Trim()}";
+            // Zusammensetzen des Benutzernamens aus Vorname und Nachname
+            if (string.IsNullOrWhiteSpace(benutzer.Benutzername))
+            {
+                if (!string.IsNullOrWhiteSpace(benutzer.Vorname) && !string.IsNullOrWhiteSpace(benutzer.Nachname))
+                {
+                    benutzer.Benutzername = $"{benutzer.Vorname} {benutzer.Nachname}";
+                }
+                else
+                {
+                    return BadRequest("Vorname und Nachname sind erforderlich, um den Benutzernamen zu erstellen.");
+                }
+            }
 
-            // Prüfen, ob Benutzername bereits existiert
+            // Überprüfung auf Duplikate
             if (await _context.Benutzer.AnyAsync(u => u.Benutzername == benutzer.Benutzername))
-                return BadRequest("Benutzername existiert bereits.");
+                return BadRequest("Ein Benutzer mit diesem Namen existiert bereits.");
 
-            benutzer.Passwort = BCrypt.Net.BCrypt.HashPassword(benutzer.Passwort, workFactor: 10); // Passwort hashen
+            if (await _context.Benutzer.AnyAsync(u => u.Email == benutzer.Email))
+                return BadRequest("Ein Benutzer mit dieser E-Mail existiert bereits.");
+
+            // Passwort hashen
+            benutzer.Passwort = BCrypt.Net.BCrypt.HashPassword(benutzer.Passwort, workFactor: 10);
 
             _context.Benutzer.Add(benutzer);
             await _context.SaveChangesAsync();
+
             return Ok("Benutzer erfolgreich registriert.");
         }
-
 
         // Login per Benutzername oder Email
         [HttpPost("login")]
@@ -89,8 +100,6 @@ namespace SkiServiceManagement.Controllers
 
             benutzer.Benutzername = updatedBenutzer.Benutzername;
             benutzer.Email = updatedBenutzer.Email;
-            benutzer.Vorname = updatedBenutzer.Vorname;
-            benutzer.Nachname = updatedBenutzer.Nachname;
             benutzer.Passwort = BCrypt.Net.BCrypt.HashPassword(updatedBenutzer.Passwort);
             benutzer.Rolle = updatedBenutzer.Rolle;
 

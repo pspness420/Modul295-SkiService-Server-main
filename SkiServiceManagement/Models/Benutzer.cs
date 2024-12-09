@@ -9,6 +9,12 @@ namespace SkiServiceManagement.Models
         [Key]
         public int Id { get; set; }
 
+        [StringLength(50)]
+        public string Vorname { get; set; }
+
+        [StringLength(50)]
+        public string Nachname { get; set; }
+        
         [Required]
         [MaxLength(50)]
         public string Benutzername { get; set; }
