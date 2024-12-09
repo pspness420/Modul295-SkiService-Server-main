@@ -4,25 +4,19 @@ using System.Threading.Tasks;
 
 namespace SkiServiceManagement.Models
 {
-    public class Benutzer
+    public class RegisterRequest
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         [MaxLength(50)]
         public string Benutzername { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string Email { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string Passwort { get; set; }
-
         [Required]
-        [MaxLength(20)]
-        public string Rolle { get; set; } = "Kunde"; // Standardrolle ist Kunde
+        [MaxLength(100)]
+        public string PasswortBestaetigen { get; set; }
     }
 }
