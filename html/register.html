@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/reset.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
+<body>
 
 <!-- Vollbild-Loader wird angezeigt, bis die Seite vollständig geladen ist -->
 <div class="loader"></div>
@@ -34,36 +35,49 @@
     </div>
 </nav>
 
-<body>
-    <section class="container my-5">
-        <h2>Registrierung</h2>
+<main class="container my-5 background">
+    <fieldset>
+        <h2>Registrieren</h2>
         <form id="registerForm">
             <div class="form-group">
                 <label for="firstName">Vorname:</label>
-                <input type="text" id="firstName" name="firstName" class="form-control" required />
+                <input type="text" class="form-control" id="firstName" placeholder="Vorname" required>
             </div>
             <div class="form-group">
                 <label for="lastName">Nachname:</label>
-                <input type="text" id="lastName" name="lastName" class="form-control" required />
+                <input type="text" class="form-control" id="lastName" placeholder="Nachname" required>
             </div>
             <div class="form-group">
                 <label for="email">E-Mail:</label>
-                <input type="email" id="email" name="email" class="form-control" required />
+                <input type="email" class="form-control" id="email" placeholder="E-Mail" required>
             </div>
             <div class="form-group">
                 <label for="password">Passwort:</label>
-                <input type="password" id="password" name="password" class="form-control" required />
+                <input type="password" class="form-control" id="password" placeholder="Passwort" required>
             </div>
             <div class="form-group">
                 <label for="confirmPassword">Passwort bestätigen:</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required />
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Passwort bestätigen" required>
             </div>
             <button type="submit" class="btn btn-primary">Registrieren</button>
         </form>
-    </section>
-    <script src="/js/auth.js"></script>
+    </fieldset>
+</main>
+
+<!-- Footer -->
+<footer class="bg-primary text-white text-center py-4 mt-auto">
+    <div class="container">
+        <!-- Fußzeilen-Links -->
+        <p>&copy; 2024 Ski-Service. Alle Rechte vorbehalten.</p>
+        <ul class="list-unstyled mb-0">
+            <li><a href="datenschutz.html" class="text-white">Datenschutz</a></li>
+            <li><a href="impressum.html" class="text-white">Impressum</a></li>
+        </ul>
+    </div>
+</footer>
 
 <!-- JavaScript-Bibliotheken -->
+<script src="/js/auth.js"></script>
 <script src="/js/navigation.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
