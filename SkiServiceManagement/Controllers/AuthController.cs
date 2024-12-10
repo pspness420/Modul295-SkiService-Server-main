@@ -145,14 +145,19 @@ namespace SkiServiceManagement.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        // Wenn man mal nur etwas für mittarbeiter benötigt
-        /* 
-        [Authorize(Policy = "MitarbeiterOnly")]
-        [HttpGet("protected")]
-        public IActionResult ProtectedEndpoint()
+        
+        [HttpGet("admin-endpoint")]
+        [Authorize(Policy = "AdminOnly")]
+        public IActionResult AdminOnlyEndpoint()
         {
-            return Ok("Nur Mitarbeiter können diesen Endpunkt aufrufen.");
+            return Ok("Nur Admins können diesen Endpunkt aufrufen.");
         }
-        */
+
+        [HttpGet("mitarbeiter-endpoint")]
+        [Authorize(Policy = "MitarbeiterOnly")]
+        public IActionResult MitarbeiterOnlyEndpoint()
+        {
+            return Ok("Mitarbeiter und Admins können diesen Endpunkt aufrufen.");
+        }
     }
 }
