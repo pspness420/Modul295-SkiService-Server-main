@@ -23,8 +23,8 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
     }
 });
 
-document.getElementById("registerForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
+document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
     const firstName = document.getElementById("firstName").value.trim();
     const lastName = document.getElementById("lastName").value.trim();
@@ -33,32 +33,24 @@ document.getElementById("registerForm").addEventListener("submit", async functio
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
     if (password !== confirmPassword) {
-        alert("Passwörter stimmen nicht überein!");
+        alert("Passwörter stimmen nicht überein.");
         return;
     }
 
-    const userData = {
-        vorname: firstName,
-        nachname: lastName,
-        email: email,
-        passwort: password,
-    };
+    const username = `${firstName} ${lastName}`;
 
     try {
         const response = await fetch("http://localhost:5000/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData),
+            body: JSON.stringify({ Benutzername: username, Passwort: password, Email: email }),
         });
 
-        if (response.ok) {
-            alert("Registrierung erfolgreich!");
-        } else {
-            alert("Registrierung fehlgeschlagen.");
-        }
+        if (!response.ok) throw new Error("Registrierung fehlgeschlagen.");
+
+        alert("Registrierung erfolgreich!");
+        location.href = "login.html";
     } catch (error) {
-        console.error("Fehler:", error);
-        alert("Ein Fehler ist aufgetreten.");
+        alert("Fehler bei der Registrierung: " + error.message);
     }
 });
-
