@@ -60,7 +60,7 @@ namespace SkiServiceManagement.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Benutzer");
+                    b.ToTable("Benutzer", (string)null);
                 });
 
             modelBuilder.Entity("SkiServiceManagement.Models.Serviceauftrag", b =>
@@ -110,7 +110,7 @@ namespace SkiServiceManagement.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Serviceauftraege");
+                    b.ToTable("Serviceauftraege", (string)null);
                 });
 #pragma warning restore 612, 618
         }

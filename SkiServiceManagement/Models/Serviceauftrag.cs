@@ -23,13 +23,13 @@ namespace SkiServiceManagement.Models
         [MaxLength(250)]
         public string Dienstleistung { get; set; }
         [Required]
-        [MaxLength(50)]
-        public DateTime? CreateDate { get; set; } = DateTime.Now;
+        public DateTime CreateDate { get; set; } = DateTime.Now;
         [Required]
-        [MaxLength(50)]
-        public DateTime? PickupDate { get; set; }
+        public DateTime PickupDate { get; set; }
         [Required]
         [MaxLength(100)]
         public string Status { get; set; } = "Offen";
     }
+
+
 }

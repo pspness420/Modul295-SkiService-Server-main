@@ -47,7 +47,6 @@ namespace SkiServiceManagement.Controllers
 
             try
             {
-                // Setze CreateDate und PickupDate
                 auftrag.CreateDate = DateTime.Now;
                 auftrag.PickupDate = CalculatePickupDate(auftrag.Prioritaet);
 
@@ -58,6 +57,7 @@ namespace SkiServiceManagement.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Fehler beim Erstellen eines Auftrags: {ex.Message}");
                 return StatusCode(500, new { message = "Interner Serverfehler.", error = ex.Message });
             }
         }

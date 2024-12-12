@@ -27,7 +27,6 @@ namespace SkiServiceManagement.Migrations
                 name: "CreateDate",
                 table: "Serviceauftraege",
                 type: "datetime2",
-                maxLength: 50,
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
@@ -35,7 +34,6 @@ namespace SkiServiceManagement.Migrations
                 name: "PickupDate",
                 table: "Serviceauftraege",
                 type: "datetime2",
-                maxLength: 50,
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
         }

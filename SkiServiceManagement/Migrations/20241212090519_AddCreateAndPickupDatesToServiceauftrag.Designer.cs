@@ -75,7 +75,6 @@ namespace SkiServiceManagement.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreateDate")
-                        .HasMaxLength(50)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Dienstleistung")
@@ -94,7 +93,6 @@ namespace SkiServiceManagement.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("PickupDate")
-                        .HasMaxLength(50)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Prioritaet")
