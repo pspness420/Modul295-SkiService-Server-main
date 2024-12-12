@@ -1,16 +1,3 @@
-UPDATE Benutzer SET Rolle = 'Kunde' WHERE Rolle IS NULL;
-SELECT TOP (1000) [Id]
-      ,[Benutzername]
-	  ,[Email]
-      ,[Passwort]
-      ,[Rolle]
-  FROM [SkiServiceDB].[dbo].[Benutzer]
-
-SELECT TOP (1000) [Id]
-      ,[KundenName]
-      ,[Email]
-      ,[Telefon]
-      ,[Prioritaet]
-      ,[Dienstleistung]
-      ,[Status]
-  FROM [SkiServiceDB].[dbo].[Serviceauftraege]
+SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Serviceauftraege';
