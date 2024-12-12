@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using SkiServiceManagement.Models;
 using SkiServiceManagement.Data;
+using System;
 
 namespace SkiServiceManagement.Controllers
 {
@@ -37,9 +38,49 @@ namespace SkiServiceManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAuftrag(Serviceauftrag auftrag)
         {
-            _context.Serviceauftraege.Add(auftrag);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAuftragById), new { id = auftrag.Id }, auftrag);
+            if (string.IsNullOrWhiteSpace(auftrag.KundenName) ||
+                string.IsNullOrWhiteSpace(auftrag.Email) ||
+                string.IsNullOrWhiteSpace(auftrag.Dienstleistung))
+            {
+                return BadRequest(new { message = "Bitte füllen Sie alle erforderlichen Felder aus." });
+            }
+
+            try
+            {
+                // Setze CreateDate und PickupDate
+                auftrag.CreateDate = DateTime.Now;
+                auftrag.PickupDate = CalculatePickupDate(auftrag.Prioritaet);
+
+                _context.Serviceauftraege.Add(auftrag);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetAuftragById), new { id = auftrag.Id }, auftrag);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Interner Serverfehler.", error = ex.Message });
+            }
+        }
+
+        private DateTime CalculatePickupDate(string priority)
+        {
+            int daysToAdd = priority switch
+            {
+                "Tief" => 12,
+                "Standard" => 7,
+                "Express" => 5,
+                _ => 7
+            };
+
+            DateTime pickupDate = DateTime.Now.AddDays(daysToAdd);
+
+            // Wochenenden überspringen
+            while (pickupDate.DayOfWeek == DayOfWeek.Saturday || pickupDate.DayOfWeek == DayOfWeek.Sunday)
+            {
+                pickupDate = pickupDate.AddDays(1);
+            }
+
+            return pickupDate;
         }
 
         [HttpPut("{id}")]
