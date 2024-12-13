@@ -120,7 +120,7 @@ Swagger ist integriert und stellt die Dokumentation für alle API-Endpunkte bere
 ---
 
 ## Autor
-**Yannnnck**
+**Yannick, Tunahan, Felipe**
 
 Dieses Projekt wurde als Teil der Modularbeit 295 erstellt. Feedback und Verbesserungen sind willkommen!
 
