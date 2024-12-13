@@ -19,8 +19,6 @@ Das Ski-Service Management Projekt wurde entwickelt, um die internen Abläufe de
 #### Authentifizierung
 - **POST** `/api/auth/register`: Benutzer registrieren
 - **POST** `/api/auth/login`: Benutzer einloggen
-- **POST** `/api/auth/logout`: Benutzer ausloggen
-- **POST** `/api/auth/refresh`: Token aktualisieren
 
 #### Benutzerverwaltung (nur für Admins)
 - **GET** `/api/auth/users`: Alle Benutzer abrufen
@@ -28,11 +26,11 @@ Das Ski-Service Management Projekt wurde entwickelt, um die internen Abläufe de
 - **DELETE** `/api/auth/{id}`: Benutzer löschen
 
 #### Auftragsmanagement
-- **GET** `/api/orders`: Alle Aufträge abrufen
-- **GET** `/api/orders/{id}`: Spezifischen Auftrag abrufen
-- **POST** `/api/orders`: Neuen Auftrag erstellen
-- **PUT** `/api/orders/{id}`: Auftrag aktualisieren
-- **DELETE** `/api/orders/{id}`: Auftrag löschen
+- **GET** `/api/auftrag`: Alle Aufträge abrufen
+- **GET** `/api/auftrag/{id}`: Spezifischen Auftrag abrufen
+- **POST** `/api/auftrag`: Neuen Auftrag erstellen
+- **PUT** `/api/auftrag/{id}`: Auftrag aktualisieren
+- **DELETE** `/api/auftrag/{id}`: Auftrag löschen
 
 ### Optional umgesetzte Erweiterungen
 - Bearbeitung aller Datenfelder eines Auftrags
@@ -126,3 +124,5 @@ Swagger ist integriert und stellt die Dokumentation für alle API-Endpunkte bere
 
 Dieses Projekt wurde als Teil der Modularbeit 295 erstellt. Feedback und Verbesserungen sind willkommen!
 
+Enough... I have endured... more than enough... I ask you forgive me, dearest Herr Müller... Ahhhhhh...
+![Ski-Service Übersicht](https://static.wikia.nocookie.net/eldenring/images/3/30/ER_Custom_Icon_Lord_of_Frenzied_Flame.png/revision/latest?cb=20240625085300)
