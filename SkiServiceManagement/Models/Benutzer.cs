@@ -30,5 +30,9 @@ namespace SkiServiceManagement.Models
         [Required]
         [MaxLength(20)]
         public string Rolle { get; set; } = "Kunde"; // Standardrolle ist Kunde
+
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiry { get; set; }
+
     }
 }

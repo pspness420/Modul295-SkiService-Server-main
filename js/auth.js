@@ -23,6 +23,40 @@ document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
     }
 });
 
+function refreshToken() {
+    const refreshToken = localStorage.getItem("refreshToken");
+    fetch("http://localhost:5000/api/auth/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessToken, refreshToken })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.accessToken) {
+                localStorage.setItem("accessToken", data.accessToken);
+                localStorage.setItem("refreshToken", data.refreshToken);
+            } else {
+                console.error("Token-Aktualisierung fehlgeschlagen.");
+            }
+        })
+        .catch(error => console.error("Fehler bei der Token-Aktualisierung:", error));
+}
+
+function logout() {
+    const refreshToken = localStorage.getItem("refreshToken");
+    fetch("http://localhost:5000/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(refreshToken)
+    })
+        .then(() => {
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            alert("Erfolgreich abgemeldet!");
+        })
+        .catch(error => console.error("Logout-Fehler:", error));
+}
+
 document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
 

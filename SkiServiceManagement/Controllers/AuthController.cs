@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SkiServiceManagement.Models;
 using SkiServiceManagement.Data;
+using System.Security.Cryptography;
 using System;
 using System.Linq;
 
@@ -76,18 +77,73 @@ namespace SkiServiceManagement.Controllers
 
         // Login per Benutzername oder Email
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        public IActionResult Login(LoginRequest request)
         {
-            // Benutzer suchen anhand von Benutzername oder E-Mail
-            var benutzer = await _context.Benutzer
-                .SingleOrDefaultAsync(u =>
-                    u.Benutzername == loginRequest.Benutzername || u.Email == loginRequest.Benutzername);
+            // Benutzer validieren...
+            var user = _context.Benutzer.SingleOrDefault(u => u.Benutzername == request.Username);
+            if (user == null || user.Passwort != request.Password)
+            {
+                return Unauthorized();
+            }
 
-            if (benutzer == null || !BCrypt.Net.BCrypt.Verify(loginRequest.Passwort, benutzer.Passwort))
-                return Unauthorized("Ungültige Anmeldedaten.");
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Benutzername),
+                new Claim(ClaimTypes.Role, user.Rolle)
+            };
 
-            var token = GenerateJwtToken(benutzer);
-            return Ok(new { Token = token });
+            var accessToken = _tokenService.GenerateAccessToken(claims);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            // RefreshToken in der Datenbank speichern
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.Now.AddDays(7); // RefreshToken ist 7 Tage gültig
+            _context.SaveChanges();
+
+            return Ok(new
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
+            });
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout([FromBody] string refreshToken)
+        {
+            // Hier den Refresh-Token aus der Datenbank oder dem Cache entfernen
+            // RemoveRefreshTokenFromDatabase(refreshToken);
+
+            return Ok(new { message = "Erfolgreich abgemeldet." });
+        }
+
+        [HttpPost("refresh")]
+        public IActionResult Refresh(TokenRefreshRequest request)
+        {
+            var user = _context.Benutzer.SingleOrDefault(u => u.RefreshToken == request.RefreshToken);
+
+            if (user == null || user.RefreshTokenExpiry <= DateTime.Now)
+            {
+                return Unauthorized("Ungültiger oder abgelaufener RefreshToken.");
+            }
+
+            var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
+            if (principal == null)
+            {
+                return Unauthorized("Ungültiges AccessToken.");
+            }
+
+            var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims);
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiry = DateTime.Now.AddDays(7);
+            _context.SaveChanges();
+
+            return Ok(new
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            });
         }
 
         // Benutzer aktualisieren (nur Admin)
