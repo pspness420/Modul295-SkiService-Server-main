@@ -7,10 +7,10 @@ document.getElementById("registrationForm").addEventListener("submit", function 
     // Holen der Eingabewerte aus den Formularfeldern
     const firstName = document.getElementById("firstName").value.trim();
     const lastName = document.getElementById("lastName").value.trim();
-    const name = `${firstName} ${lastName}`;
+    const kundenName = `${firstName} ${lastName}`; // Backend erwartet KundenName
     const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const priority = document.getElementById("priority").value;
+    const telefon = document.getElementById("phone").value.trim();
+    const prioritaet = document.getElementById("priority").value;
 
     // Holen des Hauptservices (Radio-Buttons)
     const serviceType = document.querySelector('input[name="serviceType"]:checked');
@@ -28,23 +28,24 @@ document.getElementById("registrationForm").addEventListener("submit", function 
         alert("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
         return;
     }
-    if (!validatePhone(phone)) {
+    if (!validatePhone(telefon)) {
         alert("Bitte geben Sie die Telefonnummer im Format 081 581 92 35 ein.");
         return;
     }
 
     // Zusammenfügen der Dienstleistungen (Hauptservice + zusätzliche Services)
-    const allServices = [serviceType.value, ...additionalServices].join(", ");
+    const dienstleistung = [serviceType.value, ...additionalServices].join(", "); // Backend erwartet Dienstleistung
 
     // Zusammenstellen der Anmeldedaten
     const registrationData = {
-        name: name,
+        kundenName: kundenName, // Backend erwartet KundenName
         email: email,
-        phone: phone,
-        priority: priority,
-        service: allServices,
-        create_date: new Date().toISOString(),
-        pickup_date: calculatePickupDate(priority),
+        telefon: telefon, // Backend erwartet Telefon
+        prioritaet: prioritaet, // Backend erwartet Prioritaet
+        dienstleistung: dienstleistung, // Backend erwartet Dienstleistung
+        createDate: new Date().toISOString(), // Backend erwartet CreateDate
+        pickupDate: calculatePickupDate(prioritaet), // Backend erwartet PickupDate
+        status: "Offen", // Backend erwartet Status
     };
 
     // Überprüfung auf Duplikate
@@ -78,7 +79,7 @@ document.getElementById("registrationForm").addEventListener("submit", function 
 
 // Funktion zur Überprüfung auf Duplikate
 function checkDuplicateRegistration(registrationData) {
-    return fetch("http://localhost:5000/api/registrations")
+    return fetch("http://localhost:5000/api/auftrag")
         .then((response) => {
             if (!response.ok) {
                 throw new Error("Fehler beim Abrufen der bestehenden Anmeldungen.");
@@ -89,18 +90,18 @@ function checkDuplicateRegistration(registrationData) {
             return data.some(
                 (existingRegistration) =>
                     existingRegistration.email === registrationData.email ||
-                    (existingRegistration.name === registrationData.name &&
+                    (existingRegistration.kundenName === registrationData.kundenName &&
                         existingRegistration.email === registrationData.email)
             );
         });
 }
 
 // Funktion zur Berechnung des Abholdatums basierend auf der Priorität und Öffnungszeiten
-function calculatePickupDate(priority) {
+function calculatePickupDate(prioritaet) {
     let daysToAdd;
-    if (priority === "Tief") daysToAdd = 12;
-    else if (priority === "Standard") daysToAdd = 7;
-    else if (priority === "Express") daysToAdd = 5;
+    if (prioritaet === "Tief") daysToAdd = 12;
+    else if (prioritaet === "Standard") daysToAdd = 7;
+    else if (prioritaet === "Express") daysToAdd = 5;
     else daysToAdd = 7;
 
     let pickupDate = new Date();
@@ -126,14 +127,14 @@ function validateEmail(email) {
 }
 
 // Funktion zur Validierung der Telefonnummer
-function validatePhone(phone) {
+function validatePhone(telefon) {
     const phoneRegex = /^\d{3} \d{3} \d{2} \d{2}$/;
-    return phoneRegex.test(phone);
+    return phoneRegex.test(telefon);
 }
 
 // Funktion zum Senden der Anmeldedaten an die API
 function sendRegistrationData(data) {
-    fetch("http://localhost:5000/api/registration", {
+    fetch("http://localhost:5000/api/auftrag", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -163,7 +164,7 @@ document.getElementById("priority").addEventListener("change", function () {
 });
 
 // Funktion zum Aktualisieren der Anzeige basierend auf der Priorität
-function updatePriorityInfo(priority) {
+function updatePriorityInfo(prioritaet) {
     const priorityData = {
         Tief: { daysToAdd: 12, description: "Zusätzliche Tage: +5, Total: 12 Tage bis zur Fertigstellung" },
         Standard: { daysToAdd: 7, description: "Zusätzliche Tage: 0, Total: 7 Tage bis zur Fertigstellung" },
@@ -173,7 +174,7 @@ function updatePriorityInfo(priority) {
     const infoElement = document.getElementById("priorityInfo");
 
     const today = new Date();
-    const daysToAdd = priorityData[priority]?.daysToAdd || 0;
+    const daysToAdd = priorityData[prioritaet]?.daysToAdd || 0;
     let pickupDate = new Date(today);
     pickupDate.setDate(today.getDate() + daysToAdd);
 
@@ -183,8 +184,8 @@ function updatePriorityInfo(priority) {
 
     const formattedDate = pickupDate.toLocaleDateString("de-DE");
 
-    if (priorityData[priority]) {
-        infoElement.textContent = `${priorityData[priority].description} | Fertigstellungsdatum: ${formattedDate}`;
+    if (priorityData[prioritaet]) {
+        infoElement.textContent = `${priorityData[prioritaet].description} | Fertigstellungsdatum: ${formattedDate}`;
     } else {
         infoElement.textContent = "";
     }
