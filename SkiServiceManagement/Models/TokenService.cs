@@ -1,4 +1,3 @@
-#nullable enable
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
