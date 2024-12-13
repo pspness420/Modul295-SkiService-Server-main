@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using SkiServiceManagement;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
@@ -21,7 +22,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -30,6 +30,9 @@ builder.Services.AddSwaggerGen();
 // Add DbContext with connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add TokenService as a singleton
+builder.Services.AddSingleton<TokenService>();
 
 // Add authentication with JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -55,7 +58,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("MitarbeiterOnly", policy => policy.RequireRole("Mitarbeiter", "Admin"));
 });
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -65,10 +67,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAll"); // CORS Middleware aktivieren
+app.UseCors("AllowAll"); // Enable CORS
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthentication(); // Enable Authentication Middleware
+app.UseAuthorization();  // Enable Authorization Middleware
 
 app.MapControllers();
 

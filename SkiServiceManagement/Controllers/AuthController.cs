@@ -4,12 +4,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
 using System.Text;
 using System.Threading.Tasks;
 using SkiServiceManagement.Models;
 using SkiServiceManagement.Data;
-using System.Security.Cryptography;
+using System.Collections.Generic;
 using System;
 using System.Linq;
 
@@ -20,12 +19,12 @@ namespace SkiServiceManagement.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly TokenService _tokenService;
 
-        public AuthController(ApplicationDbContext context, IConfiguration configuration)
+        public AuthController(ApplicationDbContext context, TokenService tokenService)
         {
             _context = context;
-            _configuration = configuration;
+            _tokenService = tokenService;
         }
 
         // Admin-Endpunkt: Alle Benutzer abrufen
@@ -79,11 +78,17 @@ namespace SkiServiceManagement.Controllers
         [HttpPost("login")]
         public IActionResult Login(LoginRequest request)
         {
-            // Benutzer validieren...
-            var user = _context.Benutzer.SingleOrDefault(u => u.Benutzername == request.Username);
-            if (user == null || user.Passwort != request.Password)
+            // Eingabedaten validieren
+            if (string.IsNullOrWhiteSpace(request.Benutzername) || string.IsNullOrWhiteSpace(request.Passwort))
             {
-                return Unauthorized();
+                return BadRequest("Benutzername und Passwort sind erforderlich.");
+            }
+
+            // Benutzer validieren
+            var user = _context.Benutzer.SingleOrDefault(u => u.Benutzername == request.Benutzername);
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Passwort, user.Passwort))
+            {
+                return Unauthorized("Ungültige Anmeldeinformationen.");
             }
 
             var claims = new List<Claim>
@@ -110,8 +115,16 @@ namespace SkiServiceManagement.Controllers
         [HttpPost("logout")]
         public IActionResult Logout([FromBody] string refreshToken)
         {
-            // Hier den Refresh-Token aus der Datenbank oder dem Cache entfernen
-            // RemoveRefreshTokenFromDatabase(refreshToken);
+            // Refresh-Token aus der Datenbank entfernen
+            var user = _context.Benutzer.SingleOrDefault(u => u.RefreshToken == refreshToken);
+            if (user == null)
+            {
+                return NotFound("RefreshToken nicht gefunden.");
+            }
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiry = null;
+            _context.SaveChanges();
 
             return Ok(new { message = "Erfolgreich abgemeldet." });
         }
@@ -119,6 +132,12 @@ namespace SkiServiceManagement.Controllers
         [HttpPost("refresh")]
         public IActionResult Refresh(TokenRefreshRequest request)
         {
+            // Eingabedaten validieren
+            if (string.IsNullOrWhiteSpace(request.AccessToken) || string.IsNullOrWhiteSpace(request.RefreshToken))
+            {
+                return BadRequest("AccessToken und RefreshToken sind erforderlich.");
+            }
+
             var user = _context.Benutzer.SingleOrDefault(u => u.RefreshToken == request.RefreshToken);
 
             if (user == null || user.RefreshTokenExpiry <= DateTime.Now)
@@ -178,30 +197,6 @@ namespace SkiServiceManagement.Controllers
             return NoContent();
         }
 
-        // JWT-Token generieren
-        private string GenerateJwtToken(Benutzer benutzer)
-        {
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, benutzer.Benutzername),
-                new Claim("role", benutzer.Rolle),
-                new Claim(JwtRegisteredClaimNames.Email, benutzer.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-        
         [HttpGet("admin-endpoint")]
         [Authorize(Policy = "AdminOnly")]
         public IActionResult AdminOnlyEndpoint()
