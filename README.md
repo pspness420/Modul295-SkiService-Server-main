@@ -1,202 +1,128 @@
-# Ski-Service Projekt (Modul 294)
+# Ski-Service Management Projekt
 
-Willkommen zum **Ski-Service Projekt**, einem umfassenden System, das ein Backend mit RESTful-API und ein responsives Frontend für den Ski-Service bietet. Dieses Projekt wurde im Rahmen des **Modul 294** entwickelt und umfasst eine vollständige Implementierung mit modernen Webtechnologien.
-
----
-
-## Inhaltsverzeichnis
-
-- [Ski-Service Projekt (Modul 294)](#ski-service-projekt-modul-294)
-  - [Inhaltsverzeichnis](#inhaltsverzeichnis)
-  - [Features](#features)
-    - [Backend (Server):](#backend-server)
-    - [Frontend:](#frontend)
-  - [Voraussetzungen](#voraussetzungen)
-  - [Installation und Setup](#installation-und-setup)
-    - [Backend-Setup](#backend-setup)
-    - [Frontend-Setup](#frontend-setup)
-  - [Projektstruktur](#projektstruktur)
-  - [API-Dokumentation](#api-dokumentation)
-    - [Wichtige API-Endpunkte](#wichtige-api-endpunkte)
-  - [Frontend-Inhalte](#frontend-inhalte)
-    - [Seitenübersicht:](#seitenübersicht)
-    - [Funktionen:](#funktionen)
-  - [Technologien](#technologien)
-    - [Backend:](#backend)
-    - [Frontend:](#frontend-1)
-  - [Autoren](#autoren)
-  - [Hinweise](#hinweise)
+## Projektbeschreibung
+Das Ski-Service Management Projekt wurde entwickelt, um die internen Abläufe des Jetstream-Ski-Service zu digitalisieren. Die Web-API bietet Funktionalitäten für die Verwaltung von Serviceaufträgen sowie die Authentifizierung und Autorisierung von Mitarbeitern. Das Backend-System ermöglicht die Bearbeitung und Verwaltung von Aufträgen sowie die Integration mit einer Datenbank für die Speicherung und Verarbeitung relevanter Daten.
 
 ---
 
 ## Features
 
-### Backend (Server):
+### Allgemeine Funktionen
+- Benutzer-Login mit Authentifizierung via JWT
+- Rollenbasierter Zugriff (Admin, Mitarbeiter, Kunde)
+- Serviceaufträge anzeigen, erstellen, aktualisieren und löschen
+- Filterung von Aufträgen nach Priorität
+- Statusänderung eines Auftrags (Offen, InArbeit, Abgeschlossen)
+- Datenbankstruktur in 3. Normalform mit referenzieller Integrität
 
-- RESTful-API zur Verwaltung der Anmeldungen.
-- Swagger-Dokumentation der API unter `/api-docs`.
-- Datenvalidierung und Duplikatsprüfung bei Anmeldungen.
-- Option zum Löschen von Anmeldungen basierend auf Namen und E-Mail.
-- Dynamisches Berechnen von Terminen basierend auf Priorität und Öffnungszeiten.
+### Endpunkte der API
+#### Authentifizierung
+- **POST** `/api/auth/register`: Benutzer registrieren
+- **POST** `/api/auth/login`: Benutzer einloggen
+- **POST** `/api/auth/logout`: Benutzer ausloggen
+- **POST** `/api/auth/refresh`: Token aktualisieren
 
-### Frontend:
+#### Benutzerverwaltung (nur für Admins)
+- **GET** `/api/auth/users`: Alle Benutzer abrufen
+- **PUT** `/api/auth/{id}`: Benutzerrolle aktualisieren
+- **DELETE** `/api/auth/{id}`: Benutzer löschen
 
-- Benutzerfreundliche HTML-Seiten für verschiedene Aktionen:
-  - Anmeldung für den Ski-Service.
-  - Anzeige der Angebote.
-  - Kontaktseite mit Google Maps Integration.
-  - Datenschutz und Impressum.
-- Responsive Design für alle Bildschirmgrößen.
-- Ladeanimation (Loader) beim Start.
+#### Auftragsmanagement
+- **GET** `/api/orders`: Alle Aufträge abrufen
+- **GET** `/api/orders/{id}`: Spezifischen Auftrag abrufen
+- **POST** `/api/orders`: Neuen Auftrag erstellen
+- **PUT** `/api/orders/{id}`: Auftrag aktualisieren
+- **DELETE** `/api/orders/{id}`: Auftrag löschen
+
+### Optional umgesetzte Erweiterungen
+- Bearbeitung aller Datenfelder eines Auftrags
+- Rollenbasierte Anzeige von Funktionen (Admin-Bereich, Mitarbeiter-Bereich, Kunden-Bereich)
 
 ---
 
-## Voraussetzungen
-
-- **Node.js** (Version >= 14)
-- **npm** (Node Package Manager)
-- Webbrowser (z. B. Chrome, Firefox)
+## Technologie-Stack
+- **Programmiersprache:** C#
+- **Framework:** ASP.NET Core 6.0
+- **Datenbank:** MS SQL Server
+- **ORM:** Entity Framework Core
+- **API-Dokumentation:** Swagger (OpenAPI)
+- **Test-Tool:** Postman
+- **Versionierung:** GitHub Repository
 
 ---
 
 ## Installation und Setup
 
-### Backend-Setup
+### Voraussetzungen
+- Visual Studio Code (VS Code)
+- .NET SDK 6.0 oder höher
+- MS SQL Server
+- Postman
+- Git
 
-1. **Projekt initialisieren**:
-
+### Schritte
+1. **Repository klonen**:
    ```bash
-   npm init --y
+   git clone https://github.com/Yannnnck/Modul295-SkiService-Server-main
+   cd Modul295-SkiService-Server-main
    ```
-
-2. **Notwendige Abhängigkeiten installieren**:
-
+2. **Datenbank konfigurieren**:
+   - Passe die Verbindungszeichenfolge in der Datei `appsettings.json` an:
+     ```json
+     "ConnectionStrings": {
+         "DefaultConnection": "Server=DEIN_SERVER;Database=SkiServiceDB;User Id=BENUTZER;Password=PASSWORT;"
+     }
+     ```
+3. **Datenbank migrieren**:
    ```bash
-   npm install --save express dotenv cors swagger-ui-express
+   dotnet ef database update
    ```
-
-3. **Entwicklungsabhängigkeiten installieren**:
-
-   ```bash
-   npm install --save-dev nodemon
-   ```
-
 4. **Projekt starten**:
-
-   - **Produktionsmodus**:
+   ```bash
+   dotnet run
+   ```
+5. **Swagger-Dokumentation aufrufen**:
+   - Gehe zu `http://localhost:5000/swagger` im Browser.
+6. **Visual Studio Code verwenden**:
+   - Öffne das Projekt in VS Code:
      ```bash
-     npm start
+     code .
      ```
-   - **Entwicklungsmodus**:
-     ```bash
-     npm run dev
-     ```
+   - Stelle sicher, dass alle Abhängigkeiten installiert sind (z. B. durch die integrierte Terminalkonsole von VS Code).
+   - Starte die Anwendung mit dem VS Code-Debugger.
 
-5. **Wichtig:**
+---
 
-   - Führen Sie das Projekt **nicht in einem OneDrive-Ordner** aus, da dies zu Problemen führen kann.
+## Tests
+- **Postman Collection**: Eine Sammlung von API-Tests ist vorhanden und kann zur Validierung der Endpunkte verwendet werden.
+- **Unit Tests**: Implementiert für kritische Funktionen im Backend.
 
-### Frontend-Setup
+---
 
-1. Kopieren Sie die HTML-, CSS- und JavaScript-Dateien in einen Ordner, der vom Webserver bereitgestellt wird.
-2. Stellen Sie sicher, dass die Links zu CSS und JavaScript-Dateien korrekt sind.
-3. Öffnen Sie die `index.html` in einem Webbrowser.
-
-
-## Projektstruktur
-
-Hier ist eine Übersicht über die Projektstruktur:
-```
-Modul294-SkiService-Server/
-├── css/               # CSS-Dateien für das Frontend
-├── html/              # HTML-Seiten
-├── js/                # JavaScript-Dateien für das Frontend
-├── server/            # Backend-Server und API-Logik
-│   ├── controllers/   # Controller-Logik für die API
-│   ├── data/          # Daten (z. B. JSON-Dateien)
-│   ├── models/        # Datenmodelle
-│   ├── routes/        # API-Routen
-│   └── server.js      # Einstiegspunkt für den Server
-├── .env               # Umgebungsvariablen
-├── package.json       # Projektkonfiguration und Abhängigkeiten
-├── README.md          # Dokumentation des Projekts
-└── swagger.json       # Swagger-Dokumentation für die API
-```
+## Datenbankdesign
+- Tabellen:
+  - **Benutzer**: Verwaltung von Login-Daten und Rollen (Admin, Mitarbeiter, Kunde)
+  - **Serviceaufträge**: Speicherung aller Auftragsinformationen
+- Beziehungen:
+  - 1:n Beziehung zwischen Benutzer und Aufträgen (ein Benutzer kann mehrere Aufträge erstellen/bearbeiten)
 
 ---
 
 ## API-Dokumentation
-
-Nach dem Start des Servers können Sie die API-Dokumentation unter folgendem Link aufrufen:
-
-```
-http://localhost:5000/api-docs
-```
-
-### Wichtige API-Endpunkte
-
-- **GET** `/api/registrations` - Alle Anmeldungen abrufen
-- **POST** `/api/registration` - Neue Anmeldung hinzufügen
-- **DELETE** `/api/registration/:id` - Anmeldung löschen
+Swagger ist integriert und stellt die Dokumentation für alle API-Endpunkte bereit. Es ermöglicht eine einfache Testung und Visualisierung der API-Funktionalitäten.
 
 ---
 
-## Frontend-Inhalte
-
-### Seitenübersicht:
-
-1. **Home (`index.html`)**:
-   - Begrüßungsseite mit Bannern und Informationen zum Service.
-2. **Angebot (`services.html`)**:
-   - Detaillierte Beschreibung der angebotenen Dienstleistungen.
-3. **Kontakt (`contact.html`)**:
-   - Kontaktinformationen und Google Maps Integration.
-4. **Anmeldung (`registration.html`)**:
-   - Formular zur Registrierung für den Ski-Service.
-5. **Datenschutz (`datenschutz.html`)** und **Impressum (`impressum.html`)**:
-   - Rechtliche Informationen.
-
-### Funktionen:
-
-- Formularüberprüfung (z. B. E-Mail-Format und Duplikatprüfung).
-- Dynamische Buttons:
-  - Anmeldung absenden.
-  - Bestehende Anmeldungen ansehen.
-  - Anmeldung löschen (nach Bestätigung).
-- Responsives Layout mit Bootstrap und CSS Media Queries.
+## Verbesserungsmöglichkeiten
+- Implementierung einer Login-Sperre nach mehreren Fehlversuchen
+- Zusätzliche Protokollierung aller API-Operationen
+- Erweiterung um Benutzerkommentare und personalisierte Auftragslisten
+- Bereitstellung einer erweiterten Testabdeckung
 
 ---
 
-## Technologien
+## Autor
+**Yannnnck**
 
-### Backend:
+Dieses Projekt wurde als Teil der Modularbeit 295 erstellt. Feedback und Verbesserungen sind willkommen!
 
-- **Node.js** und **Express** für den Server.
-- **dotenv** zur Verwaltung von Umgebungsvariablen.
-- **cors** für Cross-Origin Resource Sharing.
-- **Swagger** zur API-Dokumentation.
-
-### Frontend:
-
-- **HTML**, **CSS**, **Bootstrap** für Design und Layout.
-- **JavaScript** für Interaktivität.
-- **Google Maps API** für Standortanzeige.
-
----
-
-## Autoren
-
-- **Projektleitung:** Yannick Frei
-- **Entwicklung:** Yannick Frei, Tunahan Keser, Felipe Oliveira de Carvalho
-
----
-
-## Hinweise
-
-- Testen Sie das Projekt in einer lokalen Umgebung mit Node.js und einem modernen Browser.
-- Stellen Sie sicher, dass alle Verbindungen korrekt eingerichtet sind, insbesondere bei API-Calls.
-
----
-
-
-**Ski-Service Projekt** 😊
