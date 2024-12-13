@@ -31,7 +31,7 @@
             <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="services.html">Angebot</a></li>
             <li class="nav-item"><a class="nav-link" href="contact.html">Kontakt</a></li>
-            <li class="nav-item"><a class="nav-link" href="registration.html">Login</a></li>
+            <li class="nav-item"><a class="nav-link" href="registration.html" id="login-nav">Login</a></li>
         </ul>
     </div>
 </nav>
@@ -105,6 +105,25 @@
                         <label class="form-check-label" for="waxService">Heißwachsen</label>
                     </div>
                 </div>
+                <!-- Admin-Bereich -->
+                <div id="admin-functions" class="hidden">
+                    <h3>Admin-Bereich</h3>
+                    <button class="btn btn-primary" onclick="showAllUsers()">Alle Benutzer anzeigen</button>
+                    <button class="btn btn-secondary" onclick="createNewService()">Neuen Service erstellen</button>
+                </div>
+
+                <!-- Mitarbeiter-Bereich -->
+                <div id="staff-functions" class="hidden">
+                    <h3>Mitarbeiter-Bereich</h3>
+                    <button class="btn btn-primary" onclick="showAllOrders()">Alle Aufträge anzeigen</button>
+                </div>
+
+                <!-- Kunden-Bereich -->
+                <div id="user-functions" class="hidden">
+                    <h3>Kunden-Bereich</h3>
+                    <p>Hier können Sie Ihren aktuellen Status einsehen.</p>
+                </div>
+
                 <!-- Steuerung: Absenden -->
                 <div class="d-flex justify-content-between mt-4">
                     <button type="submit" class="btn btn-primary">Anmelden</button>
@@ -124,34 +143,6 @@
         </ul>
     </div>
 </footer>
-
-<script>
-    // Function to get query parameters from the URL
-    function getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-    }
-
-    // Prefill the "Vorname", "Nachname", and "E-Mail" fields if the parameters are passed
-    const firstName = getQueryParam("firstName");
-    const lastName = getQueryParam("lastName");
-    const email = getQueryParam("email");
-
-    if (firstName) {
-        document.getElementById("firstName").value = firstName;
-    }
-
-    if (lastName) {
-        document.getElementById("lastName").value = lastName;
-    }
-
-    if (email) {
-        const emailInput = document.getElementById("email");
-        if (emailInput) {
-            emailInput.value = email;
-        }
-    }
-</script>
 
 <!-- JavaScript-Bibliotheken -->
 <script src="/js/app.js"></script>

@@ -1,7 +1,69 @@
 // =========================================================================================
-// Event-Listener für das Formular (Submit-Event)
+// DOMContentLoaded Event Listener - Initialisiert basierend auf Benutzerrolle
 // =========================================================================================
-document.getElementById("registrationForm").addEventListener("submit", function (event) {
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOMContentLoaded event triggered");
+    const userRole = localStorage.getItem("userRole");
+    console.log("User Role:", userRole);
+
+    if (userRole === "Admin") {
+        document.getElementById("admin-functions")?.classList.remove("hidden");
+        console.log("Admin functions enabled");
+    } else if (userRole === "Mitarbeiter") {
+        document.getElementById("staff-functions")?.classList.remove("hidden");
+        console.log("Staff functions enabled");
+    } else if (userRole === "Kunde") {
+        document.getElementById("user-functions")?.classList.remove("hidden");
+        console.log("User functions enabled");
+    } else {
+        console.error("Unbekannte Rolle:", userRole);
+    }
+});
+
+// =========================================================================================
+// Funktionen für Admin-Bereich
+// =========================================================================================
+function showAllUsers() {
+    fetch("http://localhost:5000/api/auth/users", {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Benutzerliste:", data);
+            alert(`Es gibt ${data.length} Benutzer im System.`);
+        })
+        .catch((error) => console.error("Fehler beim Abrufen der Benutzer:", error));
+}
+
+function createNewService() {
+    alert("Hier können Sie später Services hinzufügen.");
+}
+
+// =========================================================================================
+// Funktionen für Mitarbeiter-Bereich
+// =========================================================================================
+function showAllOrders() {
+    fetch("http://localhost:5000/api/orders", {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Aufträge:", data);
+            alert(`Es gibt ${data.length} Aufträge.`);
+        })
+        .catch((error) => console.error("Fehler beim Abrufen der Aufträge:", error));
+}
+
+// =========================================================================================
+// Funktionen für das Registrierungsformular
+// =========================================================================================
+document.getElementById("registrationForm")?.addEventListener("submit", function (event) {
     event.preventDefault(); // Verhindert das Standardverhalten des Formulars (Seitenreload)
 
     // Holen der Eingabewerte aus den Formularfeldern
@@ -77,7 +139,6 @@ document.getElementById("registrationForm").addEventListener("submit", function 
 // Hilfsfunktionen
 // =========================================================================================
 
-// Funktion zur Überprüfung auf Duplikate
 function checkDuplicateRegistration(registrationData) {
     return fetch("http://localhost:5000/api/auftrag")
         .then((response) => {
@@ -96,7 +157,6 @@ function checkDuplicateRegistration(registrationData) {
         });
 }
 
-// Funktion zur Berechnung des Abholdatums basierend auf der Priorität und Öffnungszeiten
 function calculatePickupDate(prioritaet) {
     let daysToAdd;
     if (prioritaet === "Tief") daysToAdd = 12;
@@ -114,25 +174,21 @@ function calculatePickupDate(prioritaet) {
     return pickupDate.toISOString();
 }
 
-// Funktion zur Überprüfung, ob ein Tag ein arbeitsfreier Tag ist (Sonntag)
 function isNonWorkingDay(date) {
     const day = date.getDay();
     return day === 0;
 }
 
-// Funktion zur Validierung der E-Mail-Adresse
 function validateEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 
-// Funktion zur Validierung der Telefonnummer
 function validatePhone(telefon) {
     const phoneRegex = /^\d{3} \d{3} \d{2} \d{2}$/;
     return phoneRegex.test(telefon);
 }
 
-// Funktion zum Senden der Anmeldedaten an die API
 function sendRegistrationData(data) {
     fetch("http://localhost:5000/api/auftrag", {
         method: "POST",
@@ -155,7 +211,6 @@ function sendRegistrationData(data) {
             console.error("Fehler:", error);
         });
 }
-
 // =========================================================================================
 // Event-Listener für Änderungen der Priorität
 // =========================================================================================
@@ -163,7 +218,6 @@ document.getElementById("priority").addEventListener("change", function () {
     updatePriorityInfo(this.value);
 });
 
-// Funktion zum Aktualisieren der Anzeige basierend auf der Priorität
 function updatePriorityInfo(prioritaet) {
     const priorityData = {
         Tief: { daysToAdd: 12, description: "Zusätzliche Tage: +5, Total: 12 Tage bis zur Fertigstellung" },
@@ -191,7 +245,6 @@ function updatePriorityInfo(prioritaet) {
     }
 }
 
-// Initiale Anzeige für "Tief" (default)
 updatePriorityInfo("Tief");
 
 // =========================================================================================

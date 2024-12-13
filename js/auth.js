@@ -1,27 +1,26 @@
-document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
 
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    try {
-        const response = await fetch("http://localhost:5000/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ Benutzername: username, Passwort: password }),
-        });
-
-        if (!response.ok) throw new Error("Login fehlgeschlagen.");
-
-        const data = await response.json();
-        localStorage.setItem("jwtToken", data.Token);
-
-        alert("Login erfolgreich!");
-        location.href = "index.html";
-    } catch (error) {
-        alert("Fehler beim Login: " + error.message);
-    }
-});
+    fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.accessToken) {
+                localStorage.setItem("accessToken", data.accessToken);
+                localStorage.setItem("userRole", data.role); // Rolle speichern
+                window.location.href = "dashboard.html"; // Weiterleitung zur geschützten Seite
+            } else {
+                alert("Login fehlgeschlagen");
+            }
+        })
+        .catch((error) => console.error(error));
+}
 
 function refreshToken() {
     const refreshToken = localStorage.getItem("refreshToken");

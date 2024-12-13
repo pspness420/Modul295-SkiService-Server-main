@@ -68,6 +68,10 @@ body {
     width: 90%; /* Breite relativ zum Ansichtsfenster */
 }
 
+.hidden {
+    display: none;
+}
+
 /* Hover-Effekt für Navigationslinks */
 .navbar .nav-link:hover {
     background-color: #ffffff; /* Weißer Hintergrund beim Hover */
