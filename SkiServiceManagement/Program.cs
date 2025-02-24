@@ -8,6 +8,8 @@ using SkiServiceManagement.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add TokenService as a singleton
 builder.Services.AddSingleton<TokenService>();
+builder.Services.AddSingleton<MangoDBContext>();
 
 // Add authentication with JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -45,9 +48,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+            // ValidIssuer = jwtSettings["Issuer"],
+            // ValidAudience = jwtSettings["Audience"],
+            // IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
         };
     });
 
@@ -57,6 +60,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     options.AddPolicy("MitarbeiterOnly", policy => policy.RequireRole("Mitarbeiter", "Admin"));
 });
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -68,6 +73,28 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll"); // Enable CORS
+
+// Add static files: html, css, and js
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "..", "html")),
+    RequestPath = ""
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "..", "css")),
+    RequestPath = "/css"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "..", "js")),
+    RequestPath = "/js"
+});
 
 app.UseAuthentication(); // Enable Authentication Middleware
 app.UseAuthorization();  // Enable Authorization Middleware

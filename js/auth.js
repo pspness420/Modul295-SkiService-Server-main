@@ -1,30 +1,35 @@
-function login() {
+async function login() {
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
-    fetch("http://localhost:5000/api/auth/login", {
+    let response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.accessToken) {
-                localStorage.setItem("accessToken", data.accessToken);
-                localStorage.setItem("userRole", data.role); // Rolle speichern
-                window.location.href = "dashboard.html"; // Weiterleitung zur geschützten Seite
-            } else {
-                alert("Login fehlgeschlagen");
-            }
-        })
-        .catch((error) => console.error(error));
+    });
+
+    if (!response.ok) {
+        alert(await response.text());
+        return;
+    }
+
+    let json = await response.json();
+    console.log(json);
+
+    if (json.accessToken) {
+        localStorage.setItem("accessToken", json.accessToken);
+        localStorage.setItem("refreshToken", json.refreshToken);
+        window.location.href = "index.html"; // Weiterleitung zur geschützten Seite
+    } else {
+        alert("Login fehlgeschlagen");
+    }
 }
 
 function refreshToken() {
     const refreshToken = localStorage.getItem("refreshToken");
-    fetch("http://localhost:5000/api/auth/refresh", {
+    fetch("/api/auth/refresh", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accessToken, refreshToken })
@@ -43,7 +48,7 @@ function refreshToken() {
 
 function logout() {
     const refreshToken = localStorage.getItem("refreshToken");
-    fetch("http://localhost:5000/api/auth/logout", {
+    fetch("/api/auth/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(refreshToken)
@@ -55,6 +60,8 @@ function logout() {
         })
         .catch(error => console.error("Logout-Fehler:", error));
 }
+
+document.getElementById("loginForm")?.addEventListener("submit", async (e) => { e.preventDefault(); login(); });
 
 document.getElementById("registerForm")?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -73,7 +80,7 @@ document.getElementById("registerForm")?.addEventListener("submit", async (e) =>
     const username = `${firstName} ${lastName}`;
 
     try {
-        const response = await fetch("http://localhost:5000/api/auth/register", {
+        const response = await fetch("/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ Benutzername: username, Passwort: password, Email: email }),

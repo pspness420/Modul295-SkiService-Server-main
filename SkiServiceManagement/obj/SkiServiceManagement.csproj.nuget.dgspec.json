@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Modul295-SkiService-Server-main\\SkiServiceManagement\\SkiServiceManagement.csproj": {}
+    "C:\\Users\\Tunahan\\Downloads\\Modul295-SkiService-Server-main\\Modul295-SkiService-Server-main\\SkiServiceManagement\\SkiServiceManagement.csproj": {}
   },
   "projects": {
-    "C:\\Modul295-SkiService-Server-main\\SkiServiceManagement\\SkiServiceManagement.csproj": {
+    "C:\\Users\\Tunahan\\Downloads\\Modul295-SkiService-Server-main\\Modul295-SkiService-Server-main\\SkiServiceManagement\\SkiServiceManagement.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Modul295-SkiService-Server-main\\SkiServiceManagement\\SkiServiceManagement.csproj",
+        "projectUniqueName": "C:\\Users\\Tunahan\\Downloads\\Modul295-SkiService-Server-main\\Modul295-SkiService-Server-main\\SkiServiceManagement\\SkiServiceManagement.csproj",
         "projectName": "SkiServiceManagement",
-        "projectPath": "C:\\Modul295-SkiService-Server-main\\SkiServiceManagement\\SkiServiceManagement.csproj",
-        "packagesPath": "C:\\Users\\fewe$\\.nuget\\packages\\",
-        "outputPath": "C:\\Modul295-SkiService-Server-main\\SkiServiceManagement\\obj\\",
+        "projectPath": "C:\\Users\\Tunahan\\Downloads\\Modul295-SkiService-Server-main\\Modul295-SkiService-Server-main\\SkiServiceManagement\\SkiServiceManagement.csproj",
+        "packagesPath": "C:\\Users\\Tunahan\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Tunahan\\Downloads\\Modul295-SkiService-Server-main\\Modul295-SkiService-Server-main\\SkiServiceManagement\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\fewe$\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Tunahan\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -89,6 +89,10 @@
               "target": "Package",
               "version": "[8.3.0, )"
             },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
@@ -129,7 +133,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.103/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
